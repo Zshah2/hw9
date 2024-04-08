@@ -1,0 +1,73 @@
+namespace _9_1VendorList
+{
+    public partial class Form1 : Form
+    {
+        private List<string[]> vendors;
+        public Form1()
+        {
+
+
+            InitializeComponent();
+            LoadVendors();
+            PopulateComboBox();
+        }
+
+        private void LoadVendors()
+        {
+            vendors = new List<string[]>();
+            try
+            {
+                string[] lines = File.ReadAllLines("C:\\Users\\zobai\\source\\repos\\9-1VendorList\\Vendor.txt");
+                foreach (string line in lines)
+                {
+                    string[] vendorInfo = line.Split(',');
+                    vendors.Add(vendorInfo);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading vendors: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void PopulateComboBox()
+        {
+            comboBoxVendors.Items.Clear();
+            foreach (var vendor in vendors)
+            {
+                // Get the desired length of the string from vendor[0]
+                int desiredLength = Math.Min(vendor[0].Length, 200); // Adjust the length as needed
+
+                // Extract the desired length of the string
+                string vendorSubstring = vendor[0].Substring(0, desiredLength);
+
+                comboBoxVendors.Items.Add(vendorSubstring);
+            }
+             // Adjust width after populating items
+        }
+
+
+
+
+        private void buttonSearch_Click(object sender, EventArgs e)
+        {
+            string selectedVendor = comboBoxVendors.SelectedItem as string;
+            if (string.IsNullOrEmpty(selectedVendor))
+            {
+                MessageBox.Show("Please select a vendor.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string[] vendor = vendors.Find(v => v[0] == selectedVendor);
+            if (vendor != null)
+            {
+                listBox1.Items.Clear();
+               listBox1.Items.Add($"Name: {vendor[0]}");
+                listBox1.Items.Add($"Zip Code: {vendor[3]}");
+                listBox1.Items.Add($"Phone Number: {vendor[4]}");
+            }
+           
+        }
+    }
+}
+    
+
