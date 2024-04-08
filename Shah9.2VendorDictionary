@@ -1,0 +1,56 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace VendorsDictionary1
+{
+    public partial class VendorsDictionary1 : Form
+    {
+        private Dictionary<string, string> vendorPhones = new Dictionary<string, string>();
+
+        public VendorsDictionary1()
+        {
+            InitializeComponent();
+            LoadVendors();
+            PopulateComboBox();
+        }
+
+        private void LoadVendors()
+        {
+            string[] lines = File.ReadAllLines("Vendor.txt");
+            foreach (string line in lines)
+            {
+                string[] vendorInfo = line.Split(',');
+                if (vendorInfo.Length >= 2)
+                {
+                    vendorPhones.Add(vendorInfo[0], vendorInfo[4]);
+                }
+            }
+        }
+
+        private void PopulateComboBox()
+        {
+            comboBoxVendors.Items.AddRange(vendorPhones.Keys.ToArray());
+            comboBoxVendors.Sorted = true;
+        }
+
+        private void comboBoxVendors_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedVendor = comboBoxVendors.SelectedItem.ToString();
+            if (vendorPhones.ContainsKey(selectedVendor))
+            {
+                string phoneNumber = vendorPhones[selectedVendor];
+                listBoxResults.Items.Clear();
+                listBoxResults.Items.Add($"Name: {selectedVendor}");
+                listBoxResults.Items.Add($"Phone Number: {phoneNumber}");
+            }
+            else
+            {
+                listBoxResults.Items.Clear();
+                listBoxResults.Items.Add("Vendor not found.");
+            }
+        }
+    }
+}
