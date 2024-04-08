@@ -1,0 +1,60 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace 9.2VendorDictionaryII
+{
+    public partial class 9.2VendorDictionaryII : Form
+    {
+        private Dictionary<string, string[]> vendorInfo = new Dictionary<string, string[]>();
+
+        public VendorsDictionary2()
+        {
+            InitializeComponent();
+            LoadVendors();
+            PopulateComboBox();
+        }
+
+        private void LoadVendors()
+        {
+            string[] lines = File.ReadAllLines("Vendor.txt");
+            foreach (string line in lines)
+            {
+                string[] vendorData = line.Split(',');
+                if (vendorData.Length >= 5)
+                {
+                    string vendorName = vendorData[0];
+                    string[] zipAndPhone = new string[2];
+                    Array.Copy(vendorData, 3, zipAndPhone, 0, 2);
+                    vendorInfo.Add(vendorName, zipAndPhone);
+                }
+            }
+        }
+
+        private void PopulateComboBox()
+        {
+            comboBoxVendors.Items.AddRange(vendorInfo.Keys.ToArray());
+            comboBoxVendors.Sorted = true;
+        }
+
+        private void comboBoxVendors_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedVendor = comboBoxVendors.SelectedItem.ToString();
+            if (vendorInfo.ContainsKey(selectedVendor))
+            {
+                string[] info = vendorInfo[selectedVendor];
+                listBoxResults.Items.Clear();
+                listBoxResults.Items.Add($"Name: {selectedVendor}");
+                listBoxResults.Items.Add($"Zip Code: {info[0]}");
+                listBoxResults.Items.Add($"Phone Number: {info[1]}");
+            }
+            else
+            {
+                listBoxResults.Items.Clear();
+                listBoxResults.Items.Add("Vendor not found.");
+            }
+        }
+    }
+}
